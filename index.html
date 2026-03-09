@@ -78,6 +78,23 @@
       font-size: 0.92rem;
     }
 
+    .top-links {
+      margin-top: 8px;
+      text-align: center;
+    }
+
+    .top-links a {
+      color: var(--gold);
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+
+    .top-links a:hover {
+      text-decoration: underline;
+    }
+
     .card {
       background: var(--card);
       border: 1px solid var(--card-border);
@@ -408,6 +425,7 @@
       <p class="kicker">Public Interest Law Fund</p>
       <h1>BYU LAW FIGHT NIGHT</h1>
       <p class="subtitle">Only second-round tickets are available</p>
+      <p class="top-links"><a href="admin.html">Admin Dashboard</a></p>
     </header>
 
     <div class="arena">
@@ -518,7 +536,8 @@
   </div>
 
   <script>
-    const API_BASE = window.location.protocol === "file:" ? "http://localhost:3000" : "";
+    const configuredApiBase = String(window.localStorage.getItem("pilfApiBase") || "").trim();
+    const API_BASE = configuredApiBase || (window.location.protocol === "file:" ? "http://localhost:3000" : "");
     const form = document.getElementById("ticketForm");
     const statusText = document.getElementById("statusText");
     const submitBtn = document.getElementById("submitBtn");

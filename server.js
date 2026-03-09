@@ -5,6 +5,7 @@ const crypto = require("crypto");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const ADMIN_KEY = String(process.env.ADMIN_KEY || "").trim();
 
 const DATA_DIR = path.join(__dirname, "data");
 const ORDERS_PATH = path.join(DATA_DIR, "orders.json");
@@ -17,6 +18,25 @@ const FIGHTERS = ["Scott Swain", "Dante Richardson"];
 
 app.use(express.json());
 app.use(express.static(__dirname));
+
+function readAdminKey(req) {
+  const headerKey = req.get("x-admin-key");
+  const queryKey = req.query?.key;
+  return String(headerKey || queryKey || "").trim();
+}
+
+function requireAdmin(req, res, next) {
+  if (!ADMIN_KEY) {
+    return res.status(503).json({ error: "Admin key is not configured on the server." });
+  }
+
+  const candidate = readAdminKey(req);
+  if (!candidate || candidate !== ADMIN_KEY) {
+    return res.status(401).json({ error: "Invalid admin key." });
+  }
+
+  next();
+}
 
 function asyncRoute(handler) {
   return (req, res, next) => {
@@ -109,14 +129,35 @@ app.get("/api/status", asyncRoute(async (_req, res) => {
   });
 }));
 
-app.get("/api/orders", asyncRoute(async (_req, res) => {
+app.get("/api/orders", requireAdmin, asyncRoute(async (_req, res) => {
   const orders = await readOrders();
   res.json({ orders });
 }));
 
-app.get("/api/contributions", asyncRoute(async (_req, res) => {
+app.get("/api/contributions", requireAdmin, asyncRoute(async (_req, res) => {
   const contributions = await readContributions();
   res.json({ contributions });
+}));
+
+app.get("/api/admin/overview", requireAdmin, asyncRoute(async (_req, res) => {
+  const orders = await readOrders();
+  const contributions = await readContributions();
+  const sold = soldTicketCount(orders);
+  const remaining = remainingTickets(orders);
+  const totals = fighterTotals(contributions);
+
+  res.json({
+    status: {
+      item: TICKET_ITEM,
+      totalTickets: TOTAL_TICKETS,
+      sold,
+      remaining,
+      price: TICKET_PRICE
+    },
+    fighterTotals: totals,
+    orders,
+    contributions
+  });
 }));
 
 app.post("/api/orders", asyncRoute(async (req, res) => {

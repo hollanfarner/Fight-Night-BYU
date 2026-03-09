@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PILF Admin Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #061220;
+      --card: rgba(9, 25, 43, 0.75);
+      --card-border: rgba(241, 194, 72, 0.28);
+      --text: #f7f3eb;
+      --muted: #9eafc1;
+      --gold: #f1c248;
+      --ink: #0e2438;
+      --ok: #69d591;
+      --danger: #ef7a74;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "DM Sans", sans-serif;
+      background:
+        radial-gradient(circle at 12% 8%, rgba(13, 47, 78, 0.92), transparent 48%),
+        radial-gradient(circle at 88% 95%, rgba(241, 194, 72, 0.18), transparent 34%),
+        var(--bg);
+      padding: 24px;
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .kicker {
+      color: var(--gold);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-family: "Bebas Neue", sans-serif;
+      letter-spacing: 0.05em;
+      line-height: 0.95;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: 1fr;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 18px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 16px 34px rgba(0, 0, 0, 0.35);
+    }
+
+    .card h2 {
+      font-family: "Bebas Neue", sans-serif;
+      letter-spacing: 0.06em;
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+      color: var(--gold);
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid rgba(241, 194, 72, 0.24);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      padding: 10px 11px;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--gold);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 10px 14px;
+      background: linear-gradient(135deg, #f1c248, #ffd56a);
+      color: var(--ink);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+
+    .ghost {
+      background: rgba(255, 255, 255, 0.09);
+      color: var(--text);
+      border: 1px solid rgba(241, 194, 72, 0.2);
+    }
+
+    .status {
+      min-height: 20px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .status.ok {
+      color: var(--ok);
+    }
+
+    .status.error {
+      color: var(--danger);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+    }
+
+    .stat {
+      border: 1px solid rgba(241, 194, 72, 0.2);
+      border-radius: 10px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .stat .label {
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.65rem;
+      margin-bottom: 4px;
+    }
+
+    .stat .value {
+      font-family: "Bebas Neue", sans-serif;
+      color: var(--gold);
+      font-size: 1.4rem;
+      line-height: 1;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid rgba(241, 194, 72, 0.2);
+      border-radius: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 620px;
+    }
+
+    th,
+    td {
+      text-align: left;
+      font-size: 0.86rem;
+      padding: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      white-space: nowrap;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: rgba(255, 255, 255, 0.04);
+      position: sticky;
+      top: 0;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.45;
+      margin-top: 10px;
+    }
+
+    .top-link {
+      color: var(--gold);
+      text-decoration: none;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .top-link:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 700px) {
+      body {
+        padding: 16px;
+      }
+
+      .card {
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <p class="kicker">Public Interest Law Fund</p>
+      <h1>Admin Dashboard</h1>
+      <p class="subtitle">View ticket and contribution submissions.</p>
+      <p><a class="top-link" href="index.html">Back To Public Page</a></p>
+    </header>
+
+    <div class="grid">
+      <section class="card">
+        <h2>Connection</h2>
+        <div class="controls">
+          <div>
+            <label for="apiBaseInput">API Base URL</label>
+            <input id="apiBaseInput" type="text" placeholder="https://your-backend.onrender.com" />
+          </div>
+          <div>
+            <label for="adminKeyInput">Admin Key</label>
+            <input id="adminKeyInput" type="password" placeholder="Set ADMIN_KEY value" />
+          </div>
+        </div>
+        <div class="actions">
+          <button id="saveBtn" type="button">Save Settings</button>
+          <button id="loadBtn" type="button" class="ghost">Load Latest Data</button>
+          <button id="clearBtn" type="button" class="ghost">Clear Saved Key</button>
+        </div>
+        <p id="statusText" class="status"></p>
+        <p class="note">For local development use API base URL: <code>http://localhost:3000</code>. On Render use your Render URL.</p>
+      </section>
+
+      <section class="card">
+        <h2>Summary</h2>
+        <div class="stats" id="summaryStats">
+          <div class="stat"><p class="label">Sold</p><p class="value" id="soldValue">-</p></div>
+          <div class="stat"><p class="label">Remaining</p><p class="value" id="remainingValue">-</p></div>
+          <div class="stat"><p class="label">Scott Total</p><p class="value" id="scottValue">-</p></div>
+          <div class="stat"><p class="label">Dante Total</p><p class="value" id="danteValue">-</p></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Ticket Orders</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Fighter</th>
+                <th>Qty</th>
+                <th>Total</th>
+                <th>Submitted</th>
+              </tr>
+            </thead>
+            <tbody id="ordersBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Contributions</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Fighter</th>
+                <th>Amount</th>
+                <th>Submitted</th>
+              </tr>
+            </thead>
+            <tbody id="contribBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const apiBaseInput = document.getElementById("apiBaseInput");
+    const adminKeyInput = document.getElementById("adminKeyInput");
+    const saveBtn = document.getElementById("saveBtn");
+    const loadBtn = document.getElementById("loadBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const statusText = document.getElementById("statusText");
+
+    const soldValue = document.getElementById("soldValue");
+    const remainingValue = document.getElementById("remainingValue");
+    const scottValue = document.getElementById("scottValue");
+    const danteValue = document.getElementById("danteValue");
+
+    const ordersBody = document.getElementById("ordersBody");
+    const contribBody = document.getElementById("contribBody");
+
+    function getSavedApiBase() {
+      return String(window.localStorage.getItem("pilfApiBase") || "").trim();
+    }
+
+    function getSavedAdminKey() {
+      return String(window.localStorage.getItem("pilfAdminKey") || "").trim();
+    }
+
+    function setStatus(message, type) {
+      statusText.textContent = message;
+      statusText.className = `status ${type || ""}`.trim();
+    }
+
+    function formatMoney(amount) {
+      return `$${Number(amount || 0).toFixed(2)}`;
+    }
+
+    function formatDate(iso) {
+      if (!iso) {
+        return "-";
+      }
+
+      const date = new Date(iso);
+      if (Number.isNaN(date.getTime())) {
+        return "-";
+      }
+
+      return date.toLocaleString();
+    }
+
+    function renderOrders(orders) {
+      if (!Array.isArray(orders) || orders.length === 0) {
+        ordersBody.innerHTML = '<tr><td colspan="5">No orders yet.</td></tr>';
+        return;
+      }
+
+      ordersBody.innerHTML = orders
+        .slice()
+        .reverse()
+        .map((order) => `
+          <tr>
+            <td>${escapeHtml(order.name)}</td>
+            <td>${escapeHtml(order.fighter || "-")}</td>
+            <td>${Number(order.quantity || 0)}</td>
+            <td>${formatMoney(order.totalPrice)}</td>
+            <td>${formatDate(order.submittedAt)}</td>
+          </tr>
+        `)
+        .join("");
+    }
+
+    function renderContributions(contributions) {
+      if (!Array.isArray(contributions) || contributions.length === 0) {
+        contribBody.innerHTML = '<tr><td colspan="4">No contributions yet.</td></tr>';
+        return;
+      }
+
+      contribBody.innerHTML = contributions
+        .slice()
+        .reverse()
+        .map((entry) => `
+          <tr>
+            <td>${escapeHtml(entry.name)}</td>
+            <td>${escapeHtml(entry.fighter || "-")}</td>
+            <td>${formatMoney(entry.amount)}</td>
+            <td>${formatDate(entry.submittedAt)}</td>
+          </tr>
+        `)
+        .join("");
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    async function readJsonSafely(response) {
+      const raw = await response.text();
+      if (!raw) {
+        return {};
+      }
+
+      try {
+        return JSON.parse(raw);
+      } catch (_error) {
+        return {};
+      }
+    }
+
+    async function loadDashboard() {
+      const apiBase = String(apiBaseInput.value || "").trim();
+      const adminKey = String(adminKeyInput.value || "").trim();
+
+      if (!apiBase) {
+        setStatus("Enter your API base URL first.", "error");
+        return;
+      }
+
+      if (!adminKey) {
+        setStatus("Enter your admin key.", "error");
+        return;
+      }
+
+      setStatus("Loading dashboard data...", "");
+
+      try {
+        const response = await fetch(`${apiBase}/api/admin/overview`, {
+          headers: { "x-admin-key": adminKey }
+        });
+
+        const data = await readJsonSafely(response);
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to load admin data.");
+        }
+
+        soldValue.textContent = String(data.status?.sold ?? "-");
+        remainingValue.textContent = String(data.status?.remaining ?? "-");
+        scottValue.textContent = formatMoney(data.fighterTotals?.scott || 0);
+        danteValue.textContent = formatMoney(data.fighterTotals?.dante || 0);
+
+        renderOrders(data.orders || []);
+        renderContributions(data.contributions || []);
+
+        setStatus("Dashboard updated.", "ok");
+      } catch (error) {
+        setStatus(error.message || "Failed to load admin data.", "error");
+      }
+    }
+
+    saveBtn.addEventListener("click", () => {
+      const apiBase = String(apiBaseInput.value || "").trim().replace(/\/$/, "");
+      const adminKey = String(adminKeyInput.value || "").trim();
+
+      window.localStorage.setItem("pilfApiBase", apiBase);
+      window.localStorage.setItem("pilfAdminKey", adminKey);
+      setStatus("Settings saved in this browser.", "ok");
+    });
+
+    loadBtn.addEventListener("click", loadDashboard);
+
+    clearBtn.addEventListener("click", () => {
+      window.localStorage.removeItem("pilfAdminKey");
+      adminKeyInput.value = "";
+      setStatus("Saved admin key removed.", "ok");
+    });
+
+    (function init() {
+      apiBaseInput.value = getSavedApiBase();
+      adminKeyInput.value = getSavedAdminKey();
+
+      if (apiBaseInput.value && adminKeyInput.value) {
+        loadDashboard();
+      }
+    })();
+  </script>
+</body>
+</html>
