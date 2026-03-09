@@ -15,7 +15,7 @@ const DATA_DIR = path.join(__dirname, "data");
 const ORDERS_PATH = path.join(DATA_DIR, "orders.json");
 const CONTRIBUTIONS_PATH = path.join(DATA_DIR, "contributions.json");
 
-const TICKET_ITEM = "Second Round Ticket";
+const TICKET_ITEM = "Second Row Ticket";
 const TOTAL_TICKETS = 20;
 const TICKET_PRICE = 15;
 const FIGHTERS = ["Scott Swain", "Dante Richardson"];
@@ -261,7 +261,7 @@ app.post("/api/orders", asyncRoute(async (req, res) => {
   }
 
   if (item !== TICKET_ITEM) {
-    return res.status(400).json({ error: "Only second round tickets are available." });
+    return res.status(400).json({ error: "Only second row tickets are available." });
   }
 
   if (!Number.isInteger(quantity) || quantity < 1) {
