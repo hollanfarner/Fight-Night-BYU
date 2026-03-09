@@ -536,8 +536,12 @@
   </div>
 
   <script>
+    const DEFAULT_RENDER_API_BASE = "https://fight-night-byu-1.onrender.com";
     const configuredApiBase = String(window.localStorage.getItem("pilfApiBase") || "").trim();
-    const API_BASE = configuredApiBase || (window.location.protocol === "file:" ? "http://localhost:3000" : "");
+    const isGithubPages = /\.github\.io$/i.test(window.location.hostname);
+    const API_BASE = configuredApiBase
+      || (isGithubPages ? DEFAULT_RENDER_API_BASE : "")
+      || (window.location.protocol === "file:" ? "http://localhost:3000" : "");
     const form = document.getElementById("ticketForm");
     const statusText = document.getElementById("statusText");
     const submitBtn = document.getElementById("submitBtn");
