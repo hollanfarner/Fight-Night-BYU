@@ -204,6 +204,34 @@ app.get("/api/admin/overview", requireAdmin, asyncRoute(async (_req, res) => {
   });
 }));
 
+app.post("/api/admin/reset", requireAdmin, asyncRoute(async (req, res) => {
+  const target = String(req.body?.target || "all").trim().toLowerCase();
+  const validTargets = new Set(["all", "orders", "contributions"]);
+
+  if (!validTargets.has(target)) {
+    return res.status(400).json({ error: "Invalid reset target." });
+  }
+
+  const ordersBefore = await readOrders();
+  const contributionsBefore = await readContributions();
+
+  if (target === "all" || target === "orders") {
+    await writeOrders([]);
+  }
+
+  if (target === "all" || target === "contributions") {
+    await writeContributions([]);
+  }
+
+  return res.json({
+    message: "Reset complete.",
+    cleared: {
+      orders: target === "all" || target === "orders" ? ordersBefore.length : 0,
+      contributions: target === "all" || target === "contributions" ? contributionsBefore.length : 0
+    }
+  });
+}));
+
 app.post("/api/orders", asyncRoute(async (req, res) => {
   const name = String(req.body?.name || "").trim();
   const item = String(req.body?.item || "").trim();

@@ -148,6 +148,11 @@
       border: 1px solid rgba(241, 194, 72, 0.2);
     }
 
+    .danger-btn {
+      background: linear-gradient(135deg, #d94a44, #ff8075);
+      color: #fff;
+    }
+
     .status {
       min-height: 20px;
       margin-top: 10px;
@@ -277,6 +282,7 @@
         <div class="actions">
           <button id="saveBtn" type="button">Save Settings</button>
           <button id="loadBtn" type="button" class="ghost">Load Latest Data</button>
+          <button id="resetBtn" type="button" class="danger-btn">Clear Test Data</button>
           <button id="clearBtn" type="button" class="ghost">Clear Saved Key</button>
         </div>
         <p id="statusText" class="status"></p>
@@ -335,6 +341,7 @@
     const adminKeyInput = document.getElementById("adminKeyInput");
     const saveBtn = document.getElementById("saveBtn");
     const loadBtn = document.getElementById("loadBtn");
+    const resetBtn = document.getElementById("resetBtn");
     const clearBtn = document.getElementById("clearBtn");
     const statusText = document.getElementById("statusText");
 
@@ -479,6 +486,58 @@
       }
     }
 
+    async function resetDashboardData() {
+      const apiBase = String(apiBaseInput.value || "").trim();
+      const adminKey = String(adminKeyInput.value || "").trim();
+
+      if (!apiBase) {
+        setStatus("Enter your API base URL first.", "error");
+        return;
+      }
+
+      if (!adminKey) {
+        setStatus("Enter your admin key.", "error");
+        return;
+      }
+
+      const approved = window.confirm(
+        "Clear all orders and contributions? This cannot be undone."
+      );
+
+      if (!approved) {
+        return;
+      }
+
+      setStatus("Clearing test data...", "");
+
+      try {
+        const response = await fetch(`${apiBase}/api/admin/reset`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-admin-key": adminKey
+          },
+          body: JSON.stringify({ target: "all" })
+        });
+
+        const data = await readJsonSafely(response);
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to clear test data.");
+        }
+
+        const ordersCleared = Number(data.cleared?.orders || 0);
+        const contributionsCleared = Number(data.cleared?.contributions || 0);
+        setStatus(
+          `Cleared ${ordersCleared} orders and ${contributionsCleared} contributions.`,
+          "ok"
+        );
+
+        await loadDashboard();
+      } catch (error) {
+        setStatus(error.message || "Failed to clear test data.", "error");
+      }
+    }
+
     saveBtn.addEventListener("click", () => {
       const apiBase = String(apiBaseInput.value || "").trim().replace(/\/$/, "");
       const adminKey = String(adminKeyInput.value || "").trim();
@@ -489,6 +548,7 @@
     });
 
     loadBtn.addEventListener("click", loadDashboard);
+    resetBtn.addEventListener("click", resetDashboardData);
 
     clearBtn.addEventListener("click", () => {
       window.localStorage.removeItem("pilfAdminKey");
