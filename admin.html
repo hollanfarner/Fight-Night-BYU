@@ -472,18 +472,21 @@
           throw new Error(data.error || "Failed to load admin data.");
         }
 
-        soldValue.textContent = String(data.status?.sold ?? "-");
-        remainingValue.textContent = String(data.status?.remaining ?? "-");
-        scottValue.textContent = formatMoney(data.fighterTotals?.scott || 0);
-        danteValue.textContent = formatMoney(data.fighterTotals?.dante || 0);
-
-        renderOrders(data.orders || []);
-        renderContributions(data.contributions || []);
+        applyOverviewData(data);
 
         setStatus("Dashboard updated.", "ok");
       } catch (error) {
         setStatus(error.message || "Failed to load admin data.", "error");
       }
+    }
+
+    function applyOverviewData(data) {
+      soldValue.textContent = String(data.status?.sold ?? "-");
+      remainingValue.textContent = String(data.status?.remaining ?? "-");
+      scottValue.textContent = formatMoney(data.fighterTotals?.scott || 0);
+      danteValue.textContent = formatMoney(data.fighterTotals?.dante || 0);
+      renderOrders(data.orders || []);
+      renderContributions(data.contributions || []);
     }
 
     async function resetDashboardData() {
@@ -527,12 +530,15 @@
 
         const ordersCleared = Number(data.cleared?.orders || 0);
         const contributionsCleared = Number(data.cleared?.contributions || 0);
+
+        if (data.overview) {
+          applyOverviewData(data.overview);
+        }
+
         setStatus(
           `Cleared ${ordersCleared} orders and ${contributionsCleared} contributions.`,
           "ok"
         );
-
-        await loadDashboard();
       } catch (error) {
         setStatus(error.message || "Failed to clear test data.", "error");
       }

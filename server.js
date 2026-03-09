@@ -223,11 +223,29 @@ app.post("/api/admin/reset", requireAdmin, asyncRoute(async (req, res) => {
     await writeContributions([]);
   }
 
+  const ordersAfter = await readOrders();
+  const contributionsAfter = await readContributions();
+  const soldAfter = soldTicketCount(ordersAfter);
+  const remainingAfter = remainingTickets(ordersAfter);
+  const fighterTotalsAfter = fighterTotals(contributionsAfter);
+
   return res.json({
     message: "Reset complete.",
     cleared: {
       orders: target === "all" || target === "orders" ? ordersBefore.length : 0,
       contributions: target === "all" || target === "contributions" ? contributionsBefore.length : 0
+    },
+    overview: {
+      status: {
+        item: TICKET_ITEM,
+        totalTickets: TOTAL_TICKETS,
+        sold: soldAfter,
+        remaining: remainingAfter,
+        price: TICKET_PRICE
+      },
+      fighterTotals: fighterTotalsAfter,
+      orders: ordersAfter,
+      contributions: contributionsAfter
     }
   });
 }));
