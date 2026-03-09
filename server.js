@@ -6,6 +6,10 @@ const crypto = require("crypto");
 const app = express();
 const PORT = process.env.PORT || 3000;
 const ADMIN_KEY = String(process.env.ADMIN_KEY || "").trim();
+const CORS_ORIGINS = String(process.env.CORS_ORIGINS || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 const DATA_DIR = path.join(__dirname, "data");
 const ORDERS_PATH = path.join(DATA_DIR, "orders.json");
@@ -18,6 +22,46 @@ const FIGHTERS = ["Scott Swain", "Dante Richardson"];
 
 app.use(express.json());
 app.use(express.static(__dirname));
+
+function isAllowedOrigin(origin) {
+  if (!origin) {
+    return true;
+  }
+
+  if (CORS_ORIGINS.includes(origin)) {
+    return true;
+  }
+
+  if (/^https?:\/\/localhost(?::\d+)?$/i.test(origin)) {
+    return true;
+  }
+
+  if (/^https:\/\/[a-z0-9-]+\.github\.io$/i.test(origin)) {
+    return true;
+  }
+
+  return false;
+}
+
+app.use((req, res, next) => {
+  const origin = req.get("origin");
+
+  if (isAllowedOrigin(origin)) {
+    if (origin) {
+      res.setHeader("Access-Control-Allow-Origin", origin);
+      res.setHeader("Vary", "Origin");
+    }
+
+    res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type,x-admin-key");
+  }
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+
+  next();
+});
 
 function readAdminKey(req) {
   const headerKey = req.get("x-admin-key");
