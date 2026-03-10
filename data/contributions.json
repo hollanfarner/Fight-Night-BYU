@@ -1,16 +1,1 @@
-[
-  {
-    "id": "87680f6e-46e7-435d-9cbc-c8ab01212477",
-    "name": "API Test",
-    "fighter": "Dante Richardson",
-    "amount": 12.5,
-    "submittedAt": "2026-03-09T20:35:31.389Z"
-  },
-  {
-    "id": "739f0290-8cc7-4302-8d54-be4a3f7f68bf",
-    "name": "Refactor Test",
-    "fighter": "Scott Swain",
-    "amount": 5.25,
-    "submittedAt": "2026-03-09T20:38:12.492Z"
-  }
-]
+[]

@@ -161,7 +161,13 @@
 
     input:focus,
     select:focus {
-      border-color: var(--gold);
+      border-color: #000;
+    }
+
+    select option,
+    select option:checked {
+      background: #000;
+      color: #fff;
     }
 
     button {
@@ -439,7 +445,7 @@
           <label class="support-label" for="scottSupportName">Back Scott</label>
           <input id="scottSupportName" name="name" type="text" maxlength="80" placeholder="Your name" required />
           <input id="scottSupportAmount" name="amount" type="number" min="1" step="0.01" placeholder="Amount (e.g. 25)" required />
-          <button type="submit">Contribute to Scott</button>
+          <button type="submit">Back the Guardian Ad Fight 'Em</button>
           <p class="mini-status" id="scottSupportStatus"></p>
         </form>
       </aside>
@@ -528,7 +534,7 @@
           <label class="support-label" for="danteSupportName">Back Dante</label>
           <input id="danteSupportName" name="name" type="text" maxlength="80" placeholder="Your name" required />
           <input id="danteSupportAmount" name="amount" type="number" min="1" step="0.01" placeholder="Amount (e.g. 25)" required />
-          <button type="submit">Contribute to Dante</button>
+          <button type="submit">Back the Debtor-in-PUNCH-session</button>
           <p class="mini-status" id="danteSupportStatus"></p>
         </form>
       </aside>
